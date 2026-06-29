@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pink마일 플래너 Pro + 수업 필기 + 서울 날씨 + 환율 계산기</title>
+    <!-- 구글 외부 폰트, 폰트어썸 아이콘 및 SheetJS 연동 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- 외부 스타일시트 연결 -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <!-- 상단 메인 헤더 & 메뉴 탭 기능 추가 -->
+    <header>
+        <div class="main-title">
+            <h1><i class="fa-regular fa-calendar-check"></i> Pink마일 플래너 Pro</h1>
+        </div>
+        <div class="app-tabs">
+            <button class="tab-btn active" id="tab-todo" onclick="switchAppTab('todo')"><i class="fa-solid fa-list-check"></i> 투두리스트</button>
+            <button class="tab-btn" id="tab-note" onclick="switchAppTab('note')"><i class="fa-regular fa-pen-to-square"></i> 수업 필기노트</button>
+            <button class="tab-btn" id="tab-weather" onclick="switchAppTab('weather')"><i class="fa-solid fa-cloud-sun"></i> 서울 날씨·미세먼지</button>
+            <button class="tab-btn" id="tab-exchange" onclick="switchAppTab('exchange')"><i class="fa-solid fa-won-sign"></i> 환율 계산기</button>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- 1. 투두리스트 섹션 (기존 기능 전체 유지) -->
+    <!-- ========================================== -->
+    <div id="app-section-todo" class="app-section">
+        <div class="controls-row">
+            <div class="btn-group">
+                <button class="toggle-btn active" id="btn-view-week" onclick="switchView('week')">주간</button>
+                <button class="toggle-btn" id="btn-view-month" onclick="switchView('month')">월간</button>
+            </div>
+            <div class="btn-group">
+                <button class="toggle-btn active" id="btn-type-grid" onclick="switchDisplayType('grid')"><i class="fa-solid fa-border-all"></i> 달력형</button>
+                <button class="toggle-btn" id="btn-type-list" onclick="switchDisplayType('list')"><i class="fa-solid fa-table-list"></i> 표 리스트형</button>
+            </div>
+        </div>
+
+        <!-- HTML5 Canvas 기반 진척도 통계 패널 -->
+        <div class="analytics-panel" style="margin-top: 20px; margin-bottom: 20px;">
+            <canvas id="progressCanvas" width="90" height="90"></canvas>
+            <div class="analytics-text">
+                <h3 id="analytics-title">이번 주 계획 달성도</h3>
+                <p id="analytics-desc">계획들을 이행하여 게이지를 채워보세요!</p>
+            </div>
+        </div>
+
+        <!-- 네비게이션바 (날짜 이동) -->
+        <div class="controls-row" style="margin-bottom: 20px;">
+            <div class="calendar-nav">
+                <button class="nav-btn" onclick="moveDate(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                <h2 id="current-period-text">년 월</h2>
+                <button class="nav-btn" onclick="moveDate(1)"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <!-- 달력형 그리드 및 표 리스트가 토글 렌더링되는 워크스페이스 -->
+        <div id="display-workspace"></div>
+
+        <!-- 데이터 관리 및 엑셀 백업 입출력 패널 -->
+        <div class="excel-panel" style="margin-top: 25px; margin-bottom: 25px;">
+            <div class="excel-title"><i class="fa-regular fa-file-excel"></i> Todo 데이터 엑셀 변환 / 업로드</div>
+            <div class="excel-controls">
+                <div class="export-group">
+                    <input type="date" id="export-start" class="date-picker">
+                    <span>~</span>
+                    <input type="date" id="export-end" class="date-picker">
+                    <button class="action-btn" onclick="exportToExcel()"><i class="fa-solid fa-file-arrow-down"></i> 엑셀로 내보내기</button>
+                </div>
+                <div class="import-group">
+                    <label for="excel-file" class="file-label">
+                        <i class="fa-solid fa-file-arrow-up"></i> 엑셀 파일 업로드
+                    </label>
+                    <input type="file" id="excel-file" accept=".xlsx, .xls" onchange="importFromExcel(event)">
+                </div>
+            </div>
+        </div>
+
+        <!-- 선택 일자 상세 Todo 등록 및 리스트 제거 인터페이스 -->
+        <div class="todo-section">
+            <div class="todo-section-title">
+                <span id="selected-date-title">선택된 날짜</span>
+            </div>
+            
+            <div class="input-group">
+                <input type="text" id="todo-input" class="todo-input" placeholder="새로운 계획을 적어주세요..." onkeypress="handleKeyPress(event)">
+                <button class="action-btn" onclick="addTodo()">등록</button>
+            </div>
+
+            <ul class="main-todo-list" id="main-todo-list"></ul>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 2. 수업 필기노트 섹션 (신규 추가된 구조) -->
+    <!-- ========================================== -->
+    <div id="app-section-note" class="app-section" style="display: none;">
+        <div class="note-app-container" style="display: grid; grid-template-columns: 280px 1fr; gap: 20px; align-items: start;">
+            
+            <!-- 필기노트 좌측 사이드바 (과목 리스트 및 추가) -->
+            <div class="note-sidebar" style="background-color: #fff9f9; border: 1.5px solid var(--light-pink); border-radius: 16px; padding: 15px; display: flex; flex-direction: column; gap: 15px;">
+                <div class="excel-title" style="font-size: 14px;"><i class="fa-solid fa-book"></i> 과목 카테고리</div>
+                <div class="input-group" style="gap: 5px;">
+                    <input type="text" id="subject-input" class="todo-input" placeholder="새 과목명..." style="padding: 8px 12px; font-size: 13px; border-radius: 8px;">
+                    <button class="action-btn" onclick="addSubject()" style="padding: 8px 12px; border-radius: 8px;"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                <ul id="subject-list" style="list-style: none; display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto;">
+                    <!-- 스크립트에서 동적 생성 -->
+                </ul>
+
+                <hr style="border: none; border-top: 1px dashed var(--light-pink);">
+
+                <div class="excel-title" style="font-size: 14px;"><i class="fa-regular fa-file-lines"></i> 노트 목록</div>
+                <button class="action-btn" onclick="createNewNote()" style="width: 100%; justify-content: center;"><i class="fa-solid fa-file-pen"></i> 새 노트 작성</button>
+                <ul id="note-titles-list" style="list-style: none; display: flex; flex-direction: column; gap: 6px; max-height: 250px; overflow-y: auto;">
+                    <!-- 스크립트에서 동적 생성 -->
+                </ul>
+            </div>
+
+            <!-- 필기노트 우측 상세 편집 영역 -->
+            <div class="note-main-editor" style="display: flex; flex-direction: column; gap: 15px;">
+                <div id="note-editor-view" style="display: flex; flex-direction: column; gap: 15px;">
+                    <div class="input-group" style="gap: 10px;">
+                        <input type="text" id="note-title" class="todo-input" placeholder="노트 제목을 입력하세요..." style="font-weight: bold; font-size: 16px;">
+                        <button class="action-btn" onclick="saveActiveNote()"><i class="fa-regular fa-floppy-disk"></i> 저장</button>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-light); display: flex; gap: 15px; align-items: center; padding-left: 5px;">
+                        <span id="note-meta-subject">과목: 선택 없음</span>
+                        <span id="note-meta-date">최종 수정: 없음</span>
+                    </div>
+                    <textarea id="note-content" class="todo-input" placeholder="여기에 수업 내용을 자유롭게 필기하세요..." style="min-height: 400px; font-family: inherit; resize: vertical; line-height: 1.6; padding: 15px;"></textarea>
+                </div>
+                <div id="note-empty-view" class="empty-msg" style="border: 1.5px dashed var(--light-pink); border-radius: 16px; padding: 60px 20px; display: none;">
+                    <i class="fa-regular fa-pen-to-square" style="font-size: 32px; color: var(--primary-pink); margin-bottom: 10px; display: block;"></i>
+                    선택된 노트가 없습니다. 왼쪽에서 노트를 선택하거나 '새 노트 작성'을 눌러주세요.🌸
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 3. 서울시 기온 및 미세먼지 체크 섹션 -->
+    <!-- ========================================== -->
+    <div id="app-section-weather" class="app-section" style="display: none;">
+        <div class="weather-dashboard">
+            <div class="weather-header-card">
+                <div>
+                    <div class="excel-title"><i class="fa-solid fa-map-location-dot"></i> 서울시 동네별 실시간 날씨·미세먼지</div>
+                    <p class="weather-help">Open-Meteo 날씨/대기질 API를 활용해 서울 주요 자치구의 기온, 날씨, PM2.5, PM10, AQI를 확인합니다. 데이터는 5분마다 자동 갱신됩니다.</p>
+                </div>
+                <div class="weather-actions">
+                    <button class="action-btn" onclick="refreshWeatherData(true)"><i class="fa-solid fa-rotate"></i> 지금 갱신</button>
+                    <span id="weather-last-updated" class="weather-update-badge">갱신 전</span>
+                </div>
+            </div>
+
+            <div id="weather-status" class="weather-status">날씨 데이터를 불러올 준비가 되었습니다.</div>
+
+            <div class="seoul-map-layout">
+                <div class="seoul-map-card">
+                    <div class="seoul-map-title"><i class="fa-solid fa-location-crosshairs"></i> 서울시 지도형 보기</div>
+                    <div id="seoul-map" class="seoul-map" aria-label="서울시 자치구별 날씨 및 미세먼지 지도"></div>
+                </div>
+                <div class="weather-detail-card">
+                    <div class="seoul-map-title"><i class="fa-solid fa-circle-info"></i> 선택 지역 상세</div>
+                    <div id="weather-detail" class="weather-detail-empty">지도에서 지역을 선택하면 상세 정보가 표시됩니다.</div>
+                </div>
+            </div>
+
+            <div class="weather-table-card">
+                <div class="seoul-map-title"><i class="fa-solid fa-table"></i> 자치구별 상세 표</div>
+                <div class="table-view-container">
+                    <table class="todo-table weather-table">
+                        <thead>
+                            <tr>
+                                <th>지역</th>
+                                <th>기온</th>
+                                <th>날씨</th>
+                                <th>PM2.5</th>
+                                <th>PM10</th>
+                                <th>AQI</th>
+                                <th>상태</th>
+                            </tr>
+                        </thead>
+                        <tbody id="weather-table-body">
+                            <tr><td colspan="7" class="empty-msg">데이터 갱신 버튼을 눌러 주세요.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 4. 실시간 환율 계산기 섹션 -->
+    <!-- ========================================== -->
+    <div id="app-section-exchange" class="app-section" style="display: none;">
+        <div class="exchange-dashboard">
+            <div class="exchange-header-card">
+                <div>
+                    <div class="excel-title"><i class="fa-solid fa-money-bill-transfer"></i> 한국수출입은행 실시간 환율 계산기</div>
+                    <p class="weather-help">한국수출입은행 환율 API를 활용해 KRW와 달러/엔화/위안화/유로 환율을 날짜별로 조회하고 비교 계산합니다. API KEY는 사용자가 직접 입력하며 브라우저에만 저장됩니다.</p>
+                </div>
+                <span id="exchange-last-updated" class="weather-update-badge">조회 전</span>
+            </div>
+
+            <div class="exchange-api-panel">
+                <div class="exchange-form-grid">
+                    <label>
+                        <span>API KEY</span>
+                        <input type="password" id="exchange-api-key" class="todo-input" placeholder="한국수출입은행 Open API 인증키를 입력하세요">
+                    </label>
+                    <label>
+                        <span>기준 날짜 A</span>
+                        <input type="date" id="exchange-date-a" class="date-picker">
+                    </label>
+                    <label>
+                        <span>비교 날짜 B</span>
+                        <input type="date" id="exchange-date-b" class="date-picker">
+                    </label>
+                </div>
+                <div class="exchange-actions">
+                    <button class="action-btn" onclick="saveExchangeApiKey()"><i class="fa-regular fa-floppy-disk"></i> API KEY 저장</button>
+                    <button class="file-label" onclick="clearExchangeApiKey()"><i class="fa-regular fa-trash-can"></i> KEY 삭제</button>
+                    <button class="action-btn" onclick="loadExchangeRates(true)"><i class="fa-solid fa-magnifying-glass-chart"></i> 날짜별 환율 조회</button>
+                </div>
+                <p class="exchange-note">※ 한국수출입은행 환율 데이터는 영업일 기준으로 제공됩니다. 휴일/미고시일은 데이터가 없을 수 있습니다.</p>
+            </div>
+
+            <div id="exchange-status" class="weather-status">API KEY와 조회 날짜를 입력한 뒤 환율을 조회해 주세요.</div>
+
+            <div class="exchange-calculator-card">
+                <div class="seoul-map-title"><i class="fa-solid fa-calculator"></i> KRW ↔ 외화 환율 계산</div>
+                <div class="exchange-calc-grid">
+                    <label>
+                        <span>계산 기준</span>
+                        <select id="exchange-calc-date" class="todo-input" onchange="calculateExchange()">
+                            <option value="a">날짜 A</option>
+                            <option value="b">날짜 B</option>
+                        </select>
+                    </label>
+                    <label>
+                        <span>통화</span>
+                        <select id="exchange-currency" class="todo-input" onchange="calculateExchange()">
+                            <option value="USD">USD 달러</option>
+                            <option value="JPY(100)">JPY 엔화(100엔)</option>
+                            <option value="CNH">CNY 위안화</option>
+                            <option value="EUR">EUR 유로</option>
+                        </select>
+                    </label>
+                    <label>
+                        <span>금액</span>
+                        <input type="number" id="exchange-amount" class="todo-input" value="10000" min="0" step="0.01" oninput="calculateExchange()">
+                    </label>
+                    <label>
+                        <span>방향</span>
+                        <select id="exchange-direction" class="todo-input" onchange="calculateExchange()">
+                            <option value="krwToForeign">KRW → 외화</option>
+                            <option value="foreignToKrw">외화 → KRW</option>
+                        </select>
+                    </label>
+                </div>
+                <div id="exchange-result" class="exchange-result-box">환율 조회 후 계산 결과가 표시됩니다.</div>
+            </div>
+
+            <div class="exchange-table-card">
+                <div class="seoul-map-title"><i class="fa-solid fa-chart-line"></i> 날짜별 환율 비교</div>
+                <div class="table-view-container">
+                    <table class="todo-table exchange-table">
+                        <thead>
+                            <tr>
+                                <th>통화</th>
+                                <th>날짜 A</th>
+                                <th>날짜 B</th>
+                                <th>차이</th>
+                                <th>변동률</th>
+                            </tr>
+                        </thead>
+                        <tbody id="exchange-table-body">
+                            <tr><td colspan="5" class="empty-msg">아직 조회된 환율 데이터가 없습니다.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- 기존 투두 스크립트 및 신규 추가된 노트 스크립트 분리 연결 -->
+<script src="script.js"></script>
+<script src="note.js"></script>
+</body>
+</html>

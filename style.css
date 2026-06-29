@@ -1,0 +1,927 @@
+:root {
+    --bg-color: #fff5f5;
+    --primary-pink: #ffb7b2;
+    --light-pink: #ffe5ec;
+    --dark-pink: #f7a399;
+    --text-color: #4a4a4a;
+    --text-light: #8e8e8e;
+    --white: #ffffff;
+    --shadow: 0 8px 24px rgba(255, 183, 178, 0.25);
+    --border-radius: 20px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    background-color: var(--white);
+    width: 100%;
+    max-width: 950px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px dashed var(--light-pink);
+    padding-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+h1 {
+    color: var(--dark-pink);
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 상단 탭 버튼 CSS 추가 */
+.app-tabs {
+    display: flex;
+    background-color: var(--bg-color);
+    padding: 4px;
+    border-radius: 12px;
+    gap: 4px;
+}
+
+.tab-btn {
+    border: none;
+    background: none;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-light);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tab-btn.active {
+    background-color: var(--dark-pink);
+    color: var(--white);
+}
+
+.controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.btn-group {
+    display: flex;
+    background-color: var(--bg-color);
+    padding: 4px;
+    border-radius: 12px;
+    gap: 2px;
+}
+
+.toggle-btn {
+    border: none;
+    background: none;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-light);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.toggle-btn.active {
+    background-color: var(--primary-pink);
+    color: var(--white);
+}
+
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.calendar-nav h2 {
+    font-size: 18px;
+    color: var(--text-color);
+    min-width: 110px;
+    text-align: center;
+}
+
+.nav-btn {
+    border: none;
+    background-color: var(--light-pink);
+    color: var(--dark-pink);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.nav-btn:hover {
+    background-color: var(--primary-pink);
+    color: var(--white);
+}
+
+.analytics-panel {
+    background: linear-gradient(135deg, #fff9f9, var(--bg-color));
+    border-radius: 16px;
+    padding: 15px 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border: 1px solid var(--light-pink);
+}
+
+.analytics-text h3 {
+    font-size: 16px;
+    color: var(--dark-pink);
+    margin-bottom: 4px;
+}
+
+.analytics-text p {
+    font-size: 13px;
+    color: var(--text-light);
+}
+
+.grid-header {
+    display: grid;
+    text-align: center;
+    font-weight: 500;
+    color: var(--text-light);
+    font-size: 13px;
+    padding-bottom: 8px;
+}
+
+.days-container {
+    display: grid;
+    gap: 10px;
+}
+
+.day-card {
+    background-color: var(--white);
+    border: 1.5px solid var(--light-pink);
+    border-radius: 14px;
+    padding: 12px;
+    min-height: 100px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.day-card:hover {
+    border-color: var(--primary-pink);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 183, 178, 0.15);
+}
+
+.day-card.active {
+    border-color: var(--dark-pink);
+    background-color: #fff9f9;
+}
+
+.day-number {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.day-card.other-month .day-number {
+    color: #d1d1d1;
+}
+
+.day-card.today .day-number {
+    color: var(--dark-pink);
+    background-color: var(--light-pink);
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mini-todo-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+}
+
+.mini-todo-item {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background-color: var(--light-pink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.mini-todo-item.completed {
+    text-decoration: line-through;
+    opacity: 0.6;
+    background-color: #f0f0f0;
+}
+
+.table-view-container {
+    width: 100%;
+    overflow-x: auto;
+    border: 1.5px solid var(--light-pink);
+    border-radius: 16px;
+}
+
+.todo-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 14px;
+}
+
+.todo-table th, .todo-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--light-pink);
+}
+
+.todo-table th {
+    background-color: #fff5f5;
+    color: var(--dark-pink);
+    font-weight: 500;
+}
+
+.todo-table tr:last-child td {
+    border-bottom: none;
+}
+
+.todo-table tr.active {
+    background-color: #fffcfc;
+}
+
+.table-todo-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--bg-color);
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin: 3px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.table-todo-item.completed {
+    text-decoration: line-through;
+    background-color: #eef1f6;
+    color: var(--text-light);
+}
+
+.excel-panel {
+    background-color: #fffbfb;
+    border: 1.5px dashed var(--primary-pink);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.excel-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--dark-pink);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.excel-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.export-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.date-picker {
+    padding: 6px 12px;
+    border: 1.5px solid var(--light-pink);
+    border-radius: 8px;
+    outline: none;
+    font-size: 13px;
+    color: var(--text-color);
+}
+
+.action-btn {
+    background-color: var(--primary-pink);
+    color: var(--white);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s;
+}
+
+.action-btn:hover {
+    background-color: var(--dark-pink);
+}
+
+.import-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.file-label {
+    background-color: #f0f0f0;
+    color: #555;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #ddd;
+    transition: background 0.2s;
+}
+
+.file-label:hover {
+    background-color: #e5e5e5;
+}
+
+.todo-section {
+    border-top: 2px dashed var(--light-pink);
+    padding-top: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.todo-section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--dark-pink);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.todo-input {
+    flex: 1;
+    padding: 12px 18px;
+    border: 1.5px solid var(--light-pink);
+    border-radius: 12px;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.2s;
+}
+
+.todo-input:focus {
+    border-color: var(--primary-pink);
+}
+
+.main-todo-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 250px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.todo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: var(--bg-color);
+    border-radius: 12px;
+}
+
+.todo-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    flex: 1;
+}
+
+.todo-checkbox {
+    color: var(--primary-pink);
+    font-size: 18px;
+}
+
+.todo-text {
+    font-size: 14px;
+}
+
+.todo-item.completed .todo-text {
+    text-decoration: line-through;
+    color: var(--text-light);
+}
+
+.todo-item.completed .todo-checkbox {
+    color: var(--text-light);
+}
+
+.delete-btn {
+    border: none;
+    background: none;
+    color: #ffccd5;
+    cursor: pointer;
+    font-size: 16px;
+    transition: color 0.2s;
+}
+
+.delete-btn:hover {
+    color: var(--dark-pink);
+}
+
+.empty-msg {
+    text-align: center;
+    color: var(--text-light);
+    font-size: 14px;
+    padding: 20px 0;
+}
+
+/* 수업 필기 전용 사이드바 항목 스타일 */
+.subject-item, .note-title-item {
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+    background-color: var(--white);
+    border: 1px solid var(--light-pink);
+}
+.subject-item:hover, .note-title-item:hover {
+    background-color: var(--light-pink);
+}
+.subject-item.active, .note-title-item.active {
+    background-color: var(--primary-pink);
+    color: var(--white);
+    border-color: var(--primary-pink);
+}
+.note-item-del-btn {
+    background: none;
+    border: none;
+    color: #ffccd5;
+    cursor: pointer;
+}
+.note-item-del-btn:hover {
+    color: var(--dark-pink);
+}
+
+
+/* 서울시 날씨 및 미세먼지 대시보드 */
+.weather-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.weather-header-card,
+.seoul-map-card,
+.weather-detail-card,
+.weather-table-card {
+    background-color: #fffbfb;
+    border: 1.5px solid var(--light-pink);
+    border-radius: 16px;
+    padding: 18px;
+}
+
+.weather-header-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.weather-help {
+    color: var(--text-light);
+    font-size: 13px;
+    margin-top: 8px;
+    line-height: 1.5;
+}
+
+.weather-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.weather-update-badge {
+    background-color: var(--light-pink);
+    color: var(--dark-pink);
+    border-radius: 999px;
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.weather-status {
+    background-color: #fff9f9;
+    border-left: 4px solid var(--primary-pink);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: var(--text-color);
+    font-size: 13px;
+}
+
+.weather-status.error {
+    border-left-color: #ff6b6b;
+    color: #c0392b;
+}
+
+.seoul-map-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(260px, 0.9fr);
+    gap: 18px;
+    align-items: stretch;
+}
+
+.seoul-map-title {
+    color: var(--dark-pink);
+    font-weight: 700;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.seoul-map {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(64px, 1fr));
+    grid-template-rows: repeat(8, 74px);
+    gap: 8px;
+    min-height: 620px;
+    padding: 12px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #fff5f5, #ffffff);
+    border: 1px dashed var(--primary-pink);
+    overflow-x: auto;
+}
+
+.district-tile {
+    border: 1.5px solid var(--light-pink);
+    border-radius: 14px;
+    background-color: var(--white);
+    cursor: pointer;
+    padding: 8px 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 3px;
+    transition: all 0.2s ease;
+    color: var(--text-color);
+    box-shadow: 0 3px 10px rgba(255, 183, 178, 0.12);
+}
+
+.district-tile:hover,
+.district-tile.active {
+    transform: translateY(-2px);
+    border-color: var(--dark-pink);
+    box-shadow: 0 8px 18px rgba(255, 183, 178, 0.25);
+}
+
+.district-tile strong {
+    font-size: 13px;
+}
+
+.district-tile span {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.district-tile small {
+    font-size: 10px;
+    color: var(--text-light);
+}
+
+.air-good { background-color: #effaf3; border-color: #91d9a8; }
+.air-moderate { background-color: #fffbea; border-color: #f7d774; }
+.air-bad { background-color: #fff2e8; border-color: #ffb36b; }
+.air-very-bad { background-color: #fff0f0; border-color: #ff8a8a; }
+.air-unknown { background-color: #f8f8f8; border-color: #dddddd; }
+
+.air-badge {
+    display: inline-flex;
+    border-radius: 999px;
+    padding: 4px 9px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.air-text.air-good { color: #2e8b57; background: none; border: none; }
+.air-text.air-moderate { color: #b8860b; background: none; border: none; }
+.air-text.air-bad { color: #d2691e; background: none; border: none; }
+.air-text.air-very-bad { color: #d63031; background: none; border: none; }
+.air-text.air-unknown { color: var(--text-light); background: none; border: none; }
+
+.weather-detail-card {
+    min-height: 360px;
+}
+
+.weather-detail-empty {
+    color: var(--text-light);
+    text-align: center;
+    padding: 60px 10px;
+    font-size: 14px;
+}
+
+.weather-detail-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.detail-district-name {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--dark-pink);
+}
+
+.detail-temp {
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--text-color);
+}
+
+.detail-weather-text {
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.detail-grid div {
+    background-color: var(--bg-color);
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.detail-grid span {
+    font-size: 12px;
+    color: var(--text-light);
+}
+
+.detail-grid strong {
+    font-size: 15px;
+}
+
+.weather-source-note {
+    font-size: 11px;
+    color: var(--text-light);
+    line-height: 1.5;
+    border-top: 1px dashed var(--light-pink);
+    padding-top: 10px;
+}
+
+.weather-table td,
+.weather-table th {
+    white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+    .seoul-map-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .seoul-map {
+        grid-template-columns: repeat(4, minmax(72px, 1fr));
+        grid-template-rows: none;
+        min-height: auto;
+    }
+
+    .district-tile {
+        grid-row: auto !important;
+        grid-column: auto !important;
+        min-height: 76px;
+    }
+}
+
+@media (max-width: 640px) {
+    .container {
+        padding: 18px;
+    }
+
+    .weather-header-card {
+        align-items: flex-start;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .seoul-map {
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+    }
+}
+
+/* 실시간 환율 계산기 스타일 */
+.exchange-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.exchange-header-card,
+.exchange-api-panel,
+.exchange-calculator-card,
+.exchange-table-card {
+    background-color: #fffbfb;
+    border: 1.5px solid var(--light-pink);
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 4px 14px rgba(255, 183, 178, 0.12);
+}
+
+.exchange-header-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.exchange-form-grid,
+.exchange-calc-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(160px, 1fr));
+    gap: 14px;
+    align-items: end;
+}
+
+.exchange-calc-grid {
+    grid-template-columns: repeat(4, minmax(140px, 1fr));
+}
+
+.exchange-form-grid label,
+.exchange-calc-grid label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--dark-pink);
+}
+
+.exchange-form-grid .todo-input,
+.exchange-calc-grid .todo-input,
+.exchange-form-grid .date-picker {
+    width: 100%;
+}
+
+.exchange-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+    align-items: center;
+}
+
+.exchange-note {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--text-light);
+    line-height: 1.5;
+}
+
+.exchange-result-box {
+    margin-top: 16px;
+    background: linear-gradient(135deg, #fff5f5, #ffffff);
+    border: 1.5px dashed var(--primary-pink);
+    border-radius: 14px;
+    padding: 18px;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 72px;
+    justify-content: center;
+}
+
+.exchange-result-box strong {
+    color: var(--dark-pink);
+    font-size: 20px;
+}
+
+.exchange-result-box span {
+    color: var(--text-light);
+    font-size: 12px;
+}
+
+.exchange-table th,
+.exchange-table td {
+    white-space: nowrap;
+}
+
+.rate-up {
+    color: #d63031;
+    font-weight: 800;
+}
+
+.rate-down {
+    color: #0984e3;
+    font-weight: 800;
+}
+
+.rate-flat {
+    color: var(--text-light);
+}
+
+@media (max-width: 900px) {
+    .exchange-form-grid,
+    .exchange-calc-grid {
+        grid-template-columns: repeat(2, minmax(160px, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .exchange-form-grid,
+    .exchange-calc-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .exchange-header-card {
+        align-items: flex-start;
+    }
+
+    .exchange-result-box strong {
+        font-size: 17px;
+    }
+}
